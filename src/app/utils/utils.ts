@@ -1,10 +1,4 @@
-export type Square = {
-  id: string;
-  piece: (typeof PIECE_NAMES)[number] | null;
-  color: (typeof COLORS)[number] | null;
-  row: number;
-  column: number;
-};
+import { Square } from "./Square";
 
 export const PIECE_NAMES = [
   "advisor",
@@ -17,6 +11,9 @@ export const PIECE_NAMES = [
 ] as const;
 
 export const COLORS = ["red", "black"] as const;
+export const RESULTS = ["red wins", "black wins", "draw"] as const
+export const INITIAL_FEN =
+"rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w";
 
 export type RowNum = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 export type ColumnNum = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
@@ -136,4 +133,38 @@ export function identifyPieceColor(letter:string):(typeof COLORS)[number] | null
   } else {
     return "black";
   }
+}
+
+export function generateFenStringForRow(boardSquareRow:Square[]) {
+  let fenCharForRow :string[] = [];
+  boardSquareRow.forEach((boardSquare) => {
+    if (boardSquare.piece === null) {
+      if (typeof fenCharForRow[fenCharForRow.length - 1] === "number") {
+        fenCharForRow[fenCharForRow.length - 1] += 1;
+      } else {
+        fenCharForRow.push("1");
+      }
+    } else {
+      let letter;
+      if (boardSquare.piece === "knight") {
+        letter = "n";
+      } else {
+        letter = boardSquare.piece.split("")[0];
+      }
+      fenCharForRow.push(boardSquare.color === "red" ? letter.toUpperCase() : letter);
+      return;
+    }
+  });
+  const result = fenCharForRow.join('')
+  return result;
+}
+
+export function generateFenFromBoardSquaresArray(boardSquaresArray: Square[][], currentTurn:typeof COLORS[number]) {
+  const fenStringForEachRow = [];
+  for(const row of boardSquaresArray){
+    fenStringForEachRow.push(generateFenStringForRow(row))
+  }
+  const turnOrder = currentTurn === "red" ? "w" : "b";
+  const finalFenString = `${fenStringForEachRow.join("/")} ${turnOrder}`;
+  return finalFenString;
 }

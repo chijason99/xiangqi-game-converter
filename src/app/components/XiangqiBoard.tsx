@@ -1,12 +1,42 @@
 "use client";
-const INITIAL_FEN =
-  "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w";
-type XiangqiBoardProps = { fen?: string; width: number };
-import Square from "../components/Square";
-import { parseFen, validateFen } from "../utils/utils";
-export default function XiangqiBoard({ fen, width }: XiangqiBoardProps) {
-  const { boardPosition, turnOrder } =
-    fen && validateFen(fen) ? parseFen(fen) : parseFen(INITIAL_FEN);
+
+import { useEffect, useState } from "react";
+import BoardSquare from "../components/BoardSquare";
+import { GameLogicApi } from "../utils/GameLogicApi";
+import { Square } from "../utils/Square";
+
+type XiangqiBoardProps = { gameInstance:GameLogicApi};
+
+export default function XiangqiBoard({ gameInstance }: XiangqiBoardProps) {
+  const width = gameInstance.getWidth()
+  const [boardSquares, setBoardSquares] = useState<Square[][]>(gameInstance.getBoardSquares())
+  const [clickOne, setClickOne] = useState<Square | null>(null)
+  const [clickTwo, setClickTwo] = useState<Square | null>(null)
+
+  useEffect(() => {
+    if(clickOne != null && clickTwo != null){
+      gameInstance.makeMove(clickOne,clickTwo)
+      setBoardSquares(gameInstance.getBoardSquares())
+      setClickOne(null);
+      setClickTwo(null);
+      return
+    }
+  }, [clickOne,clickTwo])
+
+  function handleClickBoardSquare(e:React.MouseEvent){
+    if(clickOne == null){
+      const clickOneRow = parseInt(e.currentTarget.getAttribute("data-row") as string);
+      const clickOneColumn = parseInt(e.currentTarget.getAttribute("data-column") as string);
+      const clickOneSquare = gameInstance.getSquaresByCoordinates(clickOneRow,clickOneColumn) as Square
+      setClickOne(clickOneSquare)
+      return
+    }else{
+      const clickTwoRow = parseInt(e.currentTarget.getAttribute("data-row") as string);
+      const clickTwoColumn = parseInt(e.currentTarget.getAttribute("data-column") as string);
+      const clickTwoSquare = gameInstance.getSquaresByCoordinates(clickTwoRow,clickTwoColumn) as Square
+      setClickTwo(clickTwoSquare)
+    }
+  }
   return (
     <div
       style={{ 
@@ -15,7 +45,7 @@ export default function XiangqiBoard({ fen, width }: XiangqiBoardProps) {
       }}
       className={`mx-auto my-4 md:m-4 aspect-[9/10] bg-cover bg-[url("/xiangqi-pieces/test_board_3.png")] bg-center bg-no-repeat`}
     >
-      {boardPosition.map((row, rowNumber) => {
+      {boardSquares.map((row, rowNumber) => {
         return (
           <div
             key={rowNumber}
@@ -24,8 +54,9 @@ export default function XiangqiBoard({ fen, width }: XiangqiBoardProps) {
           >
             {row.map(({ piece, color, column, row, id }) => {
               return (
-                <Square
+                <BoardSquare
                   key={id}
+                  handleClickBoardSquare = {handleClickBoardSquare}
                   id={id}
                   row={row}
                   column={column}
