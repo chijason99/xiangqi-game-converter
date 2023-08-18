@@ -1,10 +1,10 @@
 import { Board } from "./Board";
-import { Piece } from "./Piece";
+import { Piece } from "./Pieces/Piece";
 import { BlackPlayer, RedPlayer } from "./Player";
 import { Square } from "./Square";
-import { COLORS, RESULTS } from "./utils";
+import { COLORS, PIECE_NAMES, RESULTS } from "./utils";
 
-type Move = {
+export type Move = {
   turnOrder: (typeof COLORS)[number];
   fen: string;
   movedPiece: Piece;
@@ -58,7 +58,22 @@ export class Game {
 
   }
 
-  nextTurn() {}
+  nextTurn() {
+    this.turnOrder === "red" ? this.turnOrder = "black" : this.turnOrder = "red"
+  }
 
+  saveMove(fromSquare:Square,toSquare:Square){
+    const moveObject : Move = {
+      turnOrder: this.turnOrder,
+      fen:this.board.currentFen,
+      fromSquare,
+      toSquare,
+      movedPiece: toSquare.piece as Piece
+    }
+    this.moves.push(moveObject)
+  }
+  deleteMove(){
+
+  }
   isGameOver() {}
 }

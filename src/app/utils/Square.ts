@@ -1,9 +1,24 @@
-import { COLORS, PIECE_NAMES } from "./utils";
-
-export type Square = {
+import { Piece } from "./Pieces/Piece";
+export class Square {
+  constructor({
+    id,
+    piece = null,
+    row,
+    column,
+  }: {
     id: string;
-    piece: (typeof PIECE_NAMES)[number] | null;
-    color: (typeof COLORS)[number] | null;
+    piece: Piece | null;
     row: number;
     column: number;
-  };
+  }) {
+    this.id = id;
+    this.piece = piece
+    this.row = row
+    this.column = column
+  }
+
+  id: string;
+  piece: Piece | null;
+  row: number;
+  column: number;
+}

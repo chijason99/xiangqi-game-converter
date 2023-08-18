@@ -1,19 +1,18 @@
 'use client'
 
+import { Piece as PieceClass } from "../utils/Pieces/Piece";
 import { COLORS, PIECE_NAMES } from "../utils/utils";
 import Piece from "./Piece";
 type SquareProps = {
   handleClickBoardSquare: (e:React.MouseEvent) => void;
   squareWidth: number;
-  color: (typeof COLORS)[number] | null;
-  piece: (typeof PIECE_NAMES)[number] | null;
+  piece: PieceClass | null
   id: string;
   row: number;
   column: number;
 };
 export default function BoardSquare({
   handleClickBoardSquare,
-  color,
   piece,
   squareWidth,
   row,
@@ -27,10 +26,10 @@ export default function BoardSquare({
       data-column = {column}
       onClick={(e) => handleClickBoardSquare(e)}
     >
-      {piece != null && color != null ? (
+      {piece != null ? (
         <Piece
-          pieceColor={color}
-          pieceName={piece}
+          pieceColor={piece.getPieceColor()}
+          pieceName={piece.getPieceName()}
           pieceWidth={squareWidth - 2}
         />
       ) : null}

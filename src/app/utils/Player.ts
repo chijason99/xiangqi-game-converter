@@ -12,8 +12,6 @@ export class Player{
     resign(game:Game){
         
     }
-
-    makeMove(board:Board ,fromSquare:Square, toSquare:Square){}
 }
 
 export class RedPlayer extends Player{

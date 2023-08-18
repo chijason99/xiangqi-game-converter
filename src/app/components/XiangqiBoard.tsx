@@ -28,13 +28,26 @@ export default function XiangqiBoard({ gameInstance }: XiangqiBoardProps) {
       const clickOneRow = parseInt(e.currentTarget.getAttribute("data-row") as string);
       const clickOneColumn = parseInt(e.currentTarget.getAttribute("data-column") as string);
       const clickOneSquare = gameInstance.getSquaresByCoordinates(clickOneRow,clickOneColumn) as Square
+      if(clickOneSquare.piece?.getPieceColor() !== gameInstance.getTurnOrder() || clickOneSquare.piece == null){
+        return
+      }
       setClickOne(clickOneSquare)
       return
-    }else{
+    }else if(clickOne != null && clickTwo == null){
       const clickTwoRow = parseInt(e.currentTarget.getAttribute("data-row") as string);
       const clickTwoColumn = parseInt(e.currentTarget.getAttribute("data-column") as string);
       const clickTwoSquare = gameInstance.getSquaresByCoordinates(clickTwoRow,clickTwoColumn) as Square
+      if(clickTwoSquare == clickOne){
+        // cannot click on the same square twice
+        return
+      }
+      if(clickTwoSquare?.piece?.getPieceColor() === clickOne.piece!.getPieceColor()){
+        // set the latest clicked piece to the piece that user wants to move
+        setClickOne(clickTwoSquare)
+        return
+      }
       setClickTwo(clickTwoSquare)
+      return
     }
   }
   return (
@@ -52,7 +65,7 @@ export default function XiangqiBoard({ gameInstance }: XiangqiBoardProps) {
             data-row={rowNumber}
             className="flex items-center"
           >
-            {row.map(({ piece, color, column, row, id }) => {
+            {row.map(({ piece, column, row, id }) => {
               return (
                 <BoardSquare
                   key={id}
@@ -60,7 +73,6 @@ export default function XiangqiBoard({ gameInstance }: XiangqiBoardProps) {
                   id={id}
                   row={row}
                   column={column}
-                  color={color}
                   piece={piece}
                   squareWidth={width / 9}
                 />
