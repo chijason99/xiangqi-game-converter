@@ -1,7 +1,6 @@
 'use client'
 
 import { Piece as PieceClass } from "../utils/Pieces/Piece";
-import { COLORS, PIECE_NAMES } from "../utils/utils";
 import Piece from "./Piece";
 type SquareProps = {
   handleClickBoardSquare: (e:React.MouseEvent) => void;

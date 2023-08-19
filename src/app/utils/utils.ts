@@ -94,12 +94,12 @@ export function parseFen(inputFen: string) {
   // setting the new sqr state from the decoded FEN
   decodedFen.forEach((fenString, fenStringIndex) => {
     let rowPosition: Square[] = [];
-    fenString.forEach((fenLetter, letterIndex) => {
+    fenString.forEach((fenLetter, fenLetterIndex) => {
       const square: Square = {
         piece: identifyPieceType(fenLetter),
         row: 10 - fenStringIndex,
-        column: letterIndex + 1,
-        id: `${letterIndex + 1}-${10 - fenStringIndex}`,
+        column: fenLetterIndex + 1,
+        id: `${fenLetterIndex + 1}-${10 - fenStringIndex}`,
       };
       rowPosition.push(square);
     });

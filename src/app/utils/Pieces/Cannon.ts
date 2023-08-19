@@ -20,25 +20,26 @@ export class Cannon extends Piece {
         return false
       }
       // moving horizontally
-      if(targetColumn !== currentColumn){
+      if(targetColumn !== currentColumn && targetRow === currentRow){
+        const numberOfPiecesBetween = board.numberOfPiecesBetweenTwoCoordinatesOnTheSameRow(fromSquare,toSquare,currentRow)
         // there is a piece at toSquare, i.e. capturing
-        if(toSquare.piece != null){
-          const numberOfPiecesBetween = board.numberOfPiecesBetweenTwoCoordinatesOnTheSameRow(board,fromSquare,toSquare,currentRow)
-          return numberOfPiecesBetween === 1;
-        }else{
-          const numberOfPiecesBetween = board.numberOfPiecesBetweenTwoCoordinatesOnTheSameRow(board,fromSquare,toSquare,currentRow)
-          return numberOfPiecesBetween === 0;
+        if(toSquare.piece != null && numberOfPiecesBetween === 1 && toSquare.piece.getPieceColor() !== this.color ){
+          return true ;
+        }
+        if(toSquare.piece == null && numberOfPiecesBetween === 0){
+          return true;
         }
       }
       // moving vertically
-      if(targetRow !== currentRow){
+      if(targetRow !== currentRow && targetColumn === currentColumn){
         // there is a piece at toSquare, i.e. capturing
-        if(toSquare.piece != null){
-          const numberOfPiecesBetween = board.numberOfPiecesBetweenTwoCoordinatesOnTheSameColumn(board,fromSquare,toSquare,currentColumn)
-          return numberOfPiecesBetween === 1;
-        }else{
-          const numberOfPiecesBetween = board.numberOfPiecesBetweenTwoCoordinatesOnTheSameColumn(board,fromSquare,toSquare,currentColumn)
-          return numberOfPiecesBetween === 0;
+        const numberOfPiecesBetween = board.numberOfPiecesBetweenTwoCoordinatesOnTheSameColumn(fromSquare,toSquare,currentColumn)
+        // there is a piece at toSquare, i.e. capturing
+        if(toSquare.piece != null && numberOfPiecesBetween === 1 && toSquare.piece.getPieceColor() !== this.color ){
+          return true ;
+        }
+        if(toSquare.piece == null && numberOfPiecesBetween === 0){
+          return true;
         }
       }
       return false

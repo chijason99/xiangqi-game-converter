@@ -9,25 +9,11 @@ export class GameLogicApi {
   private gameInstance: Game;
   width: number;
 
-  makeMove(fromSquare: Square, toSquare: Square) {
-    if (
-      !this.gameInstance.board.isLegalMove(
-        fromSquare,
-        toSquare,
-        this.getTurnOrder()
-      )
-    ) {
-      console.log(
-        fromSquare,toSquare,
-        this.gameInstance.board.isLegalMove(
-          fromSquare,
-          toSquare,
-          this.getTurnOrder()
-        )
-      );
+  makeMove(fromSquare: Square, toSquare: Square): void {
+    if (!this.gameInstance.isMoveValid(fromSquare, toSquare)) {
       return;
     }
-    this.gameInstance.board.movePiece(fromSquare, toSquare);
+    this.gameInstance.board.movePiece(this.gameInstance.board.squares,fromSquare, toSquare);
     this.gameInstance.nextTurn();
     this.gameInstance.board.generateFenFromPosition(
       this.gameInstance.board.squares,
@@ -36,6 +22,7 @@ export class GameLogicApi {
     this.gameInstance.saveMove(fromSquare, toSquare);
     this.showFenFromSquares();
     this.getMoves();
+    return
   }
   init() {
     return this.gameInstance.startGame();
@@ -61,7 +48,7 @@ export class GameLogicApi {
   }
 
   getBoardSquares() {
-    return this.gameInstance.board.squares;
+    return [...this.gameInstance.board.squares];
   }
 
   getCurrentFen() {
@@ -80,4 +67,6 @@ export class GameLogicApi {
       )
     );
   }
+
+
 }

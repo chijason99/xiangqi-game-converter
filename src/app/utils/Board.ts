@@ -44,10 +44,19 @@ export class Board {
     return pieceBeingMoved.isMoveAllowedForPiece(fromSquare, toSquare, this);
   }
 
-  movePiece(fromSquare: Square, toSquare: Square):void {
-    toSquare.piece = fromSquare.piece;
-    fromSquare.piece = null;
-    return
+  movePiece(boardSquares:Square[][], fromSquare: Square, toSquare: Square): Square[][] {
+    const copyOfBoardSquares = [...boardSquares]
+    const fromSquareInTheBoardSquares = copyOfBoardSquares[10 - fromSquare.row ].find(({id}:Square) => {
+      return id === fromSquare.id
+    }) as Square
+    const toSquareInTheBoardSquares = boardSquares[10 - toSquare.row].find(({id}:Square) => {
+      return id === toSquare.id
+    }) as Square
+    toSquareInTheBoardSquares.piece = fromSquareInTheBoardSquares.piece ; 
+    fromSquareInTheBoardSquares.piece = null;
+    this.squares = copyOfBoardSquares
+    console.log(this.squares)
+    return copyOfBoardSquares
   }
 
   setUpBoardPosition(fen: string):{boardPosition:Square[][], turnOrder: typeof COLORS[number]} {
@@ -68,7 +77,6 @@ export class Board {
     return obstacleSquare.piece == null;
   }
   numberOfPiecesBetweenTwoCoordinatesOnTheSameColumn(
-    board: Board,
     fromSquare: Square,
     toSquare: Square,
     specifiedColumn: number
@@ -77,7 +85,6 @@ export class Board {
     const currentColumn = fromSquare.column;
     const targetRow = toSquare.row;
     const targetColumn = toSquare.column;
-    const boardSquaresOnTheSameColumn : Square[] = []; 
     let filteredBoardSquaresBetweenTheCoordinates: Square[] = [];
     if (currentColumn !== specifiedColumn || targetColumn !== specifiedColumn){
       throw new Error("The two coordinates are not on the same column.")
@@ -88,13 +95,7 @@ export class Board {
     if(Math.abs(targetRow - currentRow) === 1){
       return 0
     }
-    for(const row of board.squares){
-      // move from bottom to top
-        const squareOfTheColumn : Square = row.find(({column}:Square) => {
-          return column === specifiedColumn 
-        }) as Square;
-        boardSquaresOnTheSameColumn.push(squareOfTheColumn)
-    }
+    const boardSquaresOnTheSameColumn : Square[] = this.getAllSquaresOnColumn(this.squares,specifiedColumn)
     // move from bottom to top
     if(targetRow > currentRow ){
       filteredBoardSquaresBetweenTheCoordinates = boardSquaresOnTheSameColumn.filter(({row}:Square) => {
@@ -116,7 +117,6 @@ export class Board {
     return result;
   }
   numberOfPiecesBetweenTwoCoordinatesOnTheSameRow(
-    board: Board,
     fromSquare: Square,
     toSquare: Square,
     specifiedRow: number
@@ -136,7 +136,7 @@ export class Board {
     if(Math.abs(targetColumn - currentColumn) === 1){
       return 0
     }
-    const boardSquaresOnTheRow: Square[] = board.squares[specifiedRow - 1];
+    const boardSquaresOnTheRow = this.getAllSquaresOnRow(this.squares,specifiedRow)
     // move from right to left
     if (targetColumn < currentColumn) {
       filteredBoardSquaresBetweenTheCoordinates = boardSquaresOnTheRow.filter(
@@ -148,6 +148,8 @@ export class Board {
         ({ column }: Square) => column > currentColumn && column < targetColumn
       );
     }
+    console.log(filteredBoardSquaresBetweenTheCoordinates);
+    
     const result = filteredBoardSquaresBetweenTheCoordinates.reduce((numberOfPieces:number,square:Square ) => {
       if(square.piece != null){
         numberOfPieces+=1;
@@ -172,5 +174,21 @@ export class Board {
      throw new Error("Invalid coordinates.");
     }
     return this.squares[10 - row][column - 1];
+  }
+
+  getAllSquaresOnRow(boardSquares:Square[][],specifiedRow:number):Square[]{
+    const boardSquaresOnTheRow: Square[] = boardSquares[10 - specifiedRow ];
+    return boardSquaresOnTheRow
+  }
+  getAllSquaresOnColumn(boardSquares:Square[][],specifiedColumn:number):Square[]{
+    const boardSquaresOnTheSameColumn : Square[] = []; 
+    for(const row of boardSquares){
+      // move from bottom to top
+        const squareOfTheColumn : Square = row.find(({column}:Square) => {
+          return column === specifiedColumn 
+        }) as Square;
+        boardSquaresOnTheSameColumn.push(squareOfTheColumn)
+    }
+    return boardSquaresOnTheSameColumn
   }
 }
