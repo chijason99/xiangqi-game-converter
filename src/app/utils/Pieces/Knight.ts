@@ -18,7 +18,7 @@ export class Knight extends Piece {
       const targetColumn = toSquare.column;
       // move forward
       if (targetRow - currentRow === 2) {
-        if (!board.isEmptySquare(board, currentRow + 1, currentColumn))
+        if (!board.isEmptySquare(board.squares, currentRow + 1, currentColumn))
           return false;
         // left
         if (targetColumn - currentColumn === -1) return true;
@@ -27,7 +27,7 @@ export class Knight extends Piece {
       }
       // move down
       if (targetRow - currentRow === -2) {
-        if (!board.isEmptySquare(board, currentRow - 1, currentColumn))
+        if (!board.isEmptySquare(board.squares, currentRow - 1, currentColumn))
           return false;
         // left
         if (targetColumn - currentColumn === -1) return true;
@@ -36,7 +36,7 @@ export class Knight extends Piece {
       }
       // move left
       if (targetColumn - currentColumn === -2) {
-        if (!board.isEmptySquare(board, currentRow, currentColumn - 1))
+        if (!board.isEmptySquare(board.squares, currentRow, currentColumn - 1))
           return false;
         // up
         if (targetRow - currentRow === 1) return true;
@@ -45,7 +45,7 @@ export class Knight extends Piece {
       }
       // move right
       if (targetColumn - currentColumn === 2) {
-        if (!board.isEmptySquare(board, currentRow, currentColumn + 1))
+        if (!board.isEmptySquare(board.squares, currentRow, currentColumn + 1))
           return false;
         // up
         if (targetRow - currentRow === 1) return true;

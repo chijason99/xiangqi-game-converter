@@ -13,7 +13,8 @@ export class GameLogicApi {
     if (!this.gameInstance.isMoveValid(fromSquare, toSquare)) {
       return;
     }
-    this.gameInstance.board.movePiece(this.gameInstance.board.squares,fromSquare, toSquare);
+    const newBoardPosition = this.gameInstance.board.movePiece(this.gameInstance.board.squares,fromSquare, toSquare);
+    this.gameInstance.board.savePositionFromBoardSquares(newBoardPosition)
     this.gameInstance.nextTurn();
     this.gameInstance.board.generateFenFromPosition(
       this.gameInstance.board.squares,
@@ -44,7 +45,7 @@ export class GameLogicApi {
     return this.gameInstance.turnOrder;
   }
   getSquaresByCoordinates(row: number, column: number) {
-    return this.gameInstance.board.getSquareByCoordinates(row, column);
+    return this.gameInstance.board.getSquareByCoordinates(this.getBoardSquares(),row, column);
   }
 
   getBoardSquares() {

@@ -21,7 +21,7 @@ export default function XiangqiBoard({ gameInstance }: XiangqiBoardProps) {
       setBoardSquares(gameInstance.getBoardSquares())
       setClickOne(null);
       setClickTwo(null);
-      
+      console.log(gameInstance.getTurnOrder())
       return
     }
   }, [clickOne,clickTwo])

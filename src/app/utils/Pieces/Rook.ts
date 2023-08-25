@@ -21,12 +21,12 @@ export class Rook extends Piece {
       }
       // move horizontally
       if(targetRow === currentRow){
-        const numberOfPiecesBetweenThePath = board.numberOfPiecesBetweenTwoCoordinatesOnTheSameRow(fromSquare,toSquare,currentRow)
+        const numberOfPiecesBetweenThePath = board.numberOfPiecesBetweenTwoCoordinatesOnTheSameRow(board.squares,fromSquare,toSquare,currentRow)
         console.log(numberOfPiecesBetweenThePath)
         return numberOfPiecesBetweenThePath === 0
       }
       if(targetColumn === currentColumn){
-        const numberOfPiecesBetweenThePath = board.numberOfPiecesBetweenTwoCoordinatesOnTheSameColumn(fromSquare,toSquare,currentColumn)
+        const numberOfPiecesBetweenThePath = board.numberOfPiecesBetweenTwoCoordinatesOnTheSameColumn(board.squares,fromSquare,toSquare,currentColumn)
         console.log(numberOfPiecesBetweenThePath)
         return numberOfPiecesBetweenThePath === 0
       }

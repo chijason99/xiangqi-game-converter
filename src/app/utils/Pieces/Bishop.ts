@@ -21,7 +21,7 @@ export class Bishop extends Piece {
         if (targetRow > 5) return false;
         // move top left corner
         if (targetColumn - currentColumn === -2 && targetRow - currentRow === 2) {
-          if (!board.isEmptySquare(board, currentRow + 1, currentColumn - 1))
+          if (!board.isEmptySquare(board.squares, currentRow + 1, currentColumn - 1))
             return false;
           if (currentColumn === 3 && currentRow === 1) return true;
           if (currentColumn === 5 && currentRow === 3) return true;
@@ -30,7 +30,7 @@ export class Bishop extends Piece {
         }
         // move top right corner
         if (targetColumn - currentColumn === 2 && targetRow - currentRow === 2) {
-          if (!board.isEmptySquare(board, currentRow + 1, currentColumn + 1))
+          if (!board.isEmptySquare(board.squares, currentRow + 1, currentColumn + 1))
             return false;
           if (currentColumn === 1 && currentRow === 3) return true;
           if (currentColumn === 3 && currentRow === 1) return true;
@@ -42,7 +42,7 @@ export class Bishop extends Piece {
           targetColumn - currentColumn === -2 &&
           targetRow - currentRow === -2
         ) {
-          if (!board.isEmptySquare(board, currentRow - 1, currentColumn - 1))
+          if (!board.isEmptySquare(board.squares, currentRow - 1, currentColumn - 1))
             return false;
           if (currentColumn === 3 && currentRow === 5) return true;
           if (currentColumn === 5 && currentRow === 3) return true;
@@ -51,7 +51,7 @@ export class Bishop extends Piece {
         }
         // move bottom right corner
         if (targetColumn - currentColumn === 2 && targetRow - currentRow === -2) {
-          if (!board.isEmptySquare(board, currentRow - 1, currentColumn + 1))
+          if (!board.isEmptySquare(board.squares, currentRow - 1, currentColumn + 1))
             return false;
           if (currentColumn === 1 && currentRow === 3) return true;
           if (currentColumn === 3 && currentRow === 5) return true;
@@ -63,7 +63,7 @@ export class Bishop extends Piece {
         if (targetRow < 6) return false;
         // move top left corner
         if (targetColumn - currentColumn === -2 && targetRow - currentRow === 2) {
-          if (!board.isEmptySquare(board, currentRow + 1, currentColumn - 1))
+          if (!board.isEmptySquare(board.squares, currentRow + 1, currentColumn - 1))
             return false;
           if (currentColumn === 3 && currentRow === 6) return true;
           if (currentColumn === 5 && currentRow === 8) return true;
@@ -72,7 +72,7 @@ export class Bishop extends Piece {
         }
         // move top right corner
         if (targetColumn - currentColumn === 2 && targetRow - currentRow === 2) {
-          if (!board.isEmptySquare(board, currentRow + 1, currentColumn + 1))
+          if (!board.isEmptySquare(board.squares, currentRow + 1, currentColumn + 1))
             return false;
           if (currentColumn === 1 && currentRow === 8) return true;
           if (currentColumn === 3 && currentRow === 6) return true;
@@ -84,7 +84,7 @@ export class Bishop extends Piece {
           targetColumn - currentColumn === -2 &&
           targetRow - currentRow === -2
         ) {
-          if (!board.isEmptySquare(board, currentRow - 1, currentColumn - 1))
+          if (!board.isEmptySquare(board.squares, currentRow - 1, currentColumn - 1))
             return false;
           if (currentColumn === 3 && currentRow === 10) return true;
           if (currentColumn === 5 && currentRow === 8) return true;
@@ -93,7 +93,7 @@ export class Bishop extends Piece {
         }
         // move bottom right corner
         if (targetColumn - currentColumn === 2 && targetRow - currentRow === -2) {
-          if (!board.isEmptySquare(board, currentRow - 1, currentColumn + 1))
+          if (!board.isEmptySquare(board.squares, currentRow - 1, currentColumn + 1))
             return false;
           if (currentColumn === 1 && currentRow === 8) return true;
           if (currentColumn === 3 && currentRow === 10) return true;

@@ -21,7 +21,7 @@ export class Cannon extends Piece {
       }
       // moving horizontally
       if(targetColumn !== currentColumn && targetRow === currentRow){
-        const numberOfPiecesBetween = board.numberOfPiecesBetweenTwoCoordinatesOnTheSameRow(fromSquare,toSquare,currentRow)
+        const numberOfPiecesBetween = board.numberOfPiecesBetweenTwoCoordinatesOnTheSameRow(board.squares,fromSquare,toSquare,currentRow)
         // there is a piece at toSquare, i.e. capturing
         if(toSquare.piece != null && numberOfPiecesBetween === 1 && toSquare.piece.getPieceColor() !== this.color ){
           return true ;
@@ -33,7 +33,7 @@ export class Cannon extends Piece {
       // moving vertically
       if(targetRow !== currentRow && targetColumn === currentColumn){
         // there is a piece at toSquare, i.e. capturing
-        const numberOfPiecesBetween = board.numberOfPiecesBetweenTwoCoordinatesOnTheSameColumn(fromSquare,toSquare,currentColumn)
+        const numberOfPiecesBetween = board.numberOfPiecesBetweenTwoCoordinatesOnTheSameColumn(board.squares,fromSquare,toSquare,currentColumn)
         // there is a piece at toSquare, i.e. capturing
         if(toSquare.piece != null && numberOfPiecesBetween === 1 && toSquare.piece.getPieceColor() !== this.color ){
           return true ;
