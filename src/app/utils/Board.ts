@@ -313,7 +313,7 @@ export class Board {
       for(const column in result){
         numberOfColumnsWithMoreThanOnePawn = result[column] >= 2 ? numberOfColumnsWithMoreThanOnePawn+=1 : numberOfColumnsWithMoreThanOnePawn;
       }
-      console.log(result, numberOfColumnsWithMoreThanOnePawn, moreThanOneColumnWithTwoPawns)
+      
       moreThanOneColumnWithTwoPawns = numberOfColumnsWithMoreThanOnePawn > 1;
     }
 
