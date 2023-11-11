@@ -32,4 +32,8 @@ export class Rook extends Piece {
       }
       return false;
     }
+
+    getChineseNameForPiece(): string {
+      return "車";
+    }
   }

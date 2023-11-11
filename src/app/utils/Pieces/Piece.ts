@@ -23,11 +23,14 @@ export abstract class Piece {
   getPieceName() {
     return this.pieceName;
   }
+
   abstract isMoveAllowedForPiece(
     fromSquare: Square,
     toSquare: Square,
     board: Board
   ): boolean;
+  
+  abstract getChineseNameForPiece():string;
 }
 
 

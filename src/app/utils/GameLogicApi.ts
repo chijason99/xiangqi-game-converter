@@ -10,26 +10,17 @@ export class GameLogicApi {
   width: number;
 
   makeMove(fromSquare: Square, toSquare: Square): void {
-    if (!this.gameInstance.isMoveValid(fromSquare, toSquare)) {
-      return;
-    }
-    const newBoardPosition = this.gameInstance.board.movePiece(this.gameInstance.board.squares,fromSquare, toSquare);
-    this.gameInstance.board.savePositionFromBoardSquares(newBoardPosition)
-    this.gameInstance.nextTurn();
-    this.gameInstance.board.generateFenFromPosition(
-      this.gameInstance.board.squares,
-      this.gameInstance.turnOrder
-    );
-    this.gameInstance.saveMove(fromSquare, toSquare);
-    this.showFenFromSquares();
-    this.getMoves();
+    this.gameInstance.makeMove(fromSquare,toSquare)
     return
   }
   init() {
     return this.gameInstance.startGame();
   }
+  getLastMove(){
+    return this.gameInstance.moves[this.gameInstance.moves.length - 1]
+  }
   getMoves() {
-    console.log(this.gameInstance.moves);
+    return this.gameInstance.moves
   }
   getWidth() {
     return this.width;

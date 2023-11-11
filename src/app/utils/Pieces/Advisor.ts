@@ -62,4 +62,8 @@ export class Advisor extends Piece {
       }
       return false;
     }
+
+    getChineseNameForPiece(): string {
+      return this.color === "red" ? "仕" : "士";
+    }
   }

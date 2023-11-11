@@ -80,4 +80,8 @@ export class King extends Piece {
       }
       return false;
     }
+
+    getChineseNameForPiece(): string {
+      return this.color === "red" ? "帥" : "將";
+    }
   }

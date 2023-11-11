@@ -103,4 +103,8 @@ export class Bishop extends Piece {
       }
       return false;
     }
+
+    getChineseNameForPiece(): string {
+      return this.color === "red" ? "相" : "象";
+    }
   }

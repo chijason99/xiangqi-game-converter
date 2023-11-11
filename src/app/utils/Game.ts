@@ -2,7 +2,7 @@ import { Board } from "./Board";
 import { Piece } from "./Pieces/Piece";
 import { BlackPlayer, RedPlayer } from "./Player";
 import { Square } from "./Square";
-import { COLORS, RESULTS } from "./utils";
+import { COLORS, RESULTS, generateMoveNotation } from "./utils";
 
 export type Move = {
   turnOrder: (typeof COLORS)[number];
@@ -10,6 +10,7 @@ export type Move = {
   movedPiece: Piece;
   fromSquare: Square;
   toSquare: Square;
+  moveNotation: string
 };
 
 // this class is responsible for managing the state of the game
@@ -53,19 +54,39 @@ export class Game {
 
   endGame() {}
 
+  makeMove(fromSquare:Square,toSquare:Square){
+    if (!this.isMoveValid(fromSquare, toSquare)) {
+      return;
+    }
+    // for generating the move notation
+    const relativePositionOfMovedPiece = this.board.getRelativePositionOfMovedPiece(this.board.squares,fromSquare);
+    const newBoardPosition = this.board.movePiece(this.board.squares,fromSquare, toSquare);
+    this.board.savePositionFromBoardSquares(newBoardPosition)
+    this.nextTurn();
+    this.board.generateFenFromPosition(
+      this.board.squares,
+      this.turnOrder
+    );
+    this.saveMove(fromSquare, toSquare, relativePositionOfMovedPiece);
+    console.log(this.moves)
+    return
+  }
+
   nextTurn(): void {
     this.turnOrder === "red"
       ? (this.turnOrder = "black")
       : (this.turnOrder = "red");
   }
 
-  saveMove(fromSquare: Square, toSquare: Square) {
+  saveMove(fromSquare: Square, toSquare: Square, relativePositionOfMovedPiece : number) {
+    
     const moveObject: Move = {
       turnOrder: this.turnOrder,
       fen: this.board.currentFen,
       fromSquare,
       toSquare,
       movedPiece: toSquare.piece as Piece,
+      moveNotation: generateMoveNotation(fromSquare, toSquare, relativePositionOfMovedPiece)
     };
     this.moves.push(moveObject);
   }
@@ -95,11 +116,6 @@ export class Game {
       fromSquare,
       toSquare
     );
-    console.log(
-      "boardSquares after making the move",
-      boardSquaresAfterMakingTheMove
-    );
-
     const kingSquareAfterMakingTheMove = this.board.getKingSquare(
       boardSquaresAfterMakingTheMove,
       this.turnOrder
@@ -128,13 +144,17 @@ export class Game {
     ) {
       return false;
     }
-    console.log(
-      "is threatened by horse",
-      this.isKingThreatenedByKnight(
+    if (
+      this.isKingThreatenedByPawn(
         boardSquaresAfterMakingTheMove,
         kingSquareAfterMakingTheMove
       )
-    );
+    ) {
+      return false;
+    }
+    if(this.isKingExposedDirectlyToOpponentKing(boardSquaresAfterMakingTheMove,kingSquareAfterMakingTheMove)){
+      return false
+    }
     return true;
   }
   isKingThreatenedByRook(
@@ -382,19 +402,100 @@ export class Game {
       ) {
         return true;
       }
-      console.log(
-        "corresponding square",
-        correspondingSquare,
-        "obstacle square",
-        coordinatesOfObstacleSquare,
-        "obstacle square is empty",
-        this.board.isEmptySquare(
-          boardSquares,
-          coordinatesOfObstacleSquare.row,
-          coordinatesOfObstacleSquare.column
-        )
-      );
     }
     return false;
+  }
+  isKingThreatenedByPawn(boardSquares: Square[][], kingSquare: Square): boolean {
+    if (
+      kingSquare.piece == null ||
+      kingSquare.piece.getPieceName() !== "king"
+    ) {
+      throw new Error("Invalid King Square");
+    }
+    const kingRow = kingSquare.row;
+    const kingColumn = kingSquare.column;
+    const pawnSquaresCoordinatesThatCanAttackTheKing = [
+      // upward
+      {
+        row: kingRow + 1,
+        column: kingColumn,
+      }, 
+      // downward
+      {
+        row: kingRow - 1,
+        column: kingColumn,
+      },
+      // leftward
+      {
+        row: kingRow,
+        column: kingColumn - 1,
+      },
+      // rightward
+      {
+        row: kingRow,
+        column: kingColumn + 1,
+      }
+    ];
+    for (const coordinates of pawnSquaresCoordinatesThatCanAttackTheKing) {
+      if (
+        coordinates.row < 1 ||
+        coordinates.row > 10 ||
+        coordinates.column < 1 ||
+        coordinates.column > 9
+      ) {
+        continue;
+      }
+      if(this.turnOrder === "red" && coordinates.row === kingRow - 1){
+        continue
+      }
+      if(this.turnOrder === "black" && coordinates.row === kingRow + 1){
+        continue
+      }
+      const correspondingSquare = this.board.getSquareByCoordinates(
+        boardSquares,
+        coordinates.row,
+        coordinates.column
+      );
+      if (correspondingSquare.id === "-1") {
+        // if the position of the knight attacking square is out of the board
+        continue;
+      }
+      if (
+        correspondingSquare.piece != null &&
+        correspondingSquare.piece.getPieceName() === "pawn" &&
+        correspondingSquare.piece.getPieceColor() !== this.turnOrder
+      ) {
+        return true;
+      }
+    }
+    return false
+  }
+  isKingExposedDirectlyToOpponentKing(boardSquares: Square[][], kingSquare: Square){
+    if (
+      kingSquare.piece == null ||
+      kingSquare.piece.getPieceName() !== "king"
+    ) {
+      throw new Error("Invalid King Square");
+    }
+    const kingColumn = kingSquare.column;
+    const boardSquaresOnKingColumn = this.board.getAllSquaresOnColumn(
+      boardSquares,
+      kingColumn
+    );
+    const opponentKingOnKingColumn = boardSquaresOnKingColumn.filter(
+      ({ piece }) => {
+        return (
+          piece != null &&
+          piece.getPieceName() === "king" &&
+          piece.getPieceColor() !== this.turnOrder
+        );
+      }
+    );
+    if(opponentKingOnKingColumn.length === 0){
+        return false
+    }else{
+      const numberOfPiecesBetweenTwoKings = this.board.numberOfPiecesBetweenTwoCoordinatesOnTheSameColumn(boardSquares,opponentKingOnKingColumn[0],kingSquare,kingColumn)
+      return numberOfPiecesBetweenTwoKings === 0 ? true : false;
+    }
   }
 }

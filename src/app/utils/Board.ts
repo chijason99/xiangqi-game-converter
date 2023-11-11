@@ -1,5 +1,4 @@
-import BoardSquare from "../components/BoardSquare";
-import Piece from "../components/Piece";
+import { Piece } from "./Pieces/Piece";
 import { Square } from "./Square";
 import {
   COLORS,
@@ -75,9 +74,6 @@ export class Board {
     }) as Square;
     toSquareInTheBoardSquares.piece = fromSquareInTheBoardSquares.piece;
     fromSquareInTheBoardSquares.piece = null;
-    console.log("fromSquareInTheBoardSquares",fromSquareInTheBoardSquares);
-    console.log("toSquareInTheBoardSquares",toSquareInTheBoardSquares)
-    
     return copyOfBoardSquares;
   }
 
@@ -119,7 +115,6 @@ export class Board {
     const targetColumn = toSquare.column;
     let filteredBoardSquaresBetweenTheCoordinates: Square[] = [];
     if (currentColumn !== specifiedColumn || targetColumn !== specifiedColumn) {
-      console.log("currentCol",currentColumn, "targetCol",targetColumn, "specCol",specifiedColumn)
       throw new Error("The two coordinates are not on the same column.");
     }
     if (currentRow === targetRow) {
@@ -146,11 +141,6 @@ export class Board {
           return row < currentRow && row > targetRow;
         });
     }
-    console.log(
-      "pieces between on the column",
-      filteredBoardSquaresBetweenTheCoordinates
-    );
-
     const result = filteredBoardSquaresBetweenTheCoordinates.reduce(
       (numberOfPieces: number, square: Square) => {
         if (square.piece != null) {
@@ -162,7 +152,7 @@ export class Board {
     );
     return result;
   }
-  numberOfPiecesBetweenTwoCoordinatesOnTheSameRow(
+   numberOfPiecesBetweenTwoCoordinatesOnTheSameRow(
     boardSquares: Square[][],
     fromSquare: Square,
     toSquare: Square,
@@ -263,5 +253,55 @@ export class Board {
       }
     }
     return new Square({ id: "", piece: null, row: 0, column: 0 });
+  }
+
+  // a method for generating notation, check if another piece(s) of the same type and color is/are on the same column as a given piece 
+  // TODO: a special method for pawns as it would need more details
+  getRelativePositionOfMovedPiece(boardSquare:Square[][], fromSquare:Square) : number
+  {
+    // relative position starts from 0, and it is view from the perspective of the player making the move
+    // for example, if the returned relativePositionOfCurrentPiece is 1, it indicates that the piece in the input is the piece at front
+    // the number could be bigger than 1 when the piece is a pawn, but the relative position is calculated in the same manner
+
+    const squaresOfAnotherPieceOnTheSameColumn : Square[] = [];
+    const movedPiece = fromSquare.piece as Piece;
+    let isAnyPieceOfSameTypeOnTheSameColumn = false;
+    let relativePositionOfMovedPiece = 0;
+
+    boardSquare.forEach(row => {
+      row.forEach(square => {
+        if(square.column === fromSquare.column && 
+          square.piece?.getPieceName() === movedPiece.getPieceName() && 
+          square.piece?.getPieceColor() === movedPiece.getPieceColor() && 
+          square.row !== fromSquare.row){
+            squaresOfAnotherPieceOnTheSameColumn.push(square)
+        }
+      })
+    })
+
+    if(squaresOfAnotherPieceOnTheSameColumn.length === 1){
+      isAnyPieceOfSameTypeOnTheSameColumn = true;
+
+      if(movedPiece.getPieceColor() === "red"){
+          relativePositionOfMovedPiece = squaresOfAnotherPieceOnTheSameColumn[0].row > fromSquare.row ? 0 : 1;
+      }else{
+          relativePositionOfMovedPiece = squaresOfAnotherPieceOnTheSameColumn[0].row < fromSquare.row ? 0 : 1;
+      }
+    }
+
+    // case for pawns
+    if(squaresOfAnotherPieceOnTheSameColumn.length > 1){
+      isAnyPieceOfSameTypeOnTheSameColumn = true;
+
+      squaresOfAnotherPieceOnTheSameColumn.forEach(square => {
+        if(movedPiece.getPieceColor() === "red"){
+          relativePositionOfMovedPiece = fromSquare.row > square.row ? relativePositionOfMovedPiece+=1 : relativePositionOfMovedPiece;
+        }else{
+          relativePositionOfMovedPiece = fromSquare.row < square.row ? relativePositionOfMovedPiece+=1 : relativePositionOfMovedPiece;
+        }
+      })
+    }
+
+     return relativePositionOfMovedPiece
   }
 }

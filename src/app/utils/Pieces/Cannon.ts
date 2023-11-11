@@ -44,4 +44,8 @@ export class Cannon extends Piece {
       }
       return false
     }
+
+    getChineseNameForPiece(): string {
+      return "炮";
+    }
   }

@@ -190,3 +190,76 @@ export function generateFenFromBoardSquaresArray(
   const finalFenString = `${fenStringForEachRow.join("/")} ${turnOrder}`;
   return finalFenString;
 }
+
+// a function to generate Chinese move notation following the standard from Xiangqi World Federation
+export function generateMoveNotation(
+  fromSquare: Square,
+  toSquare: Square,
+  relativePositionOfCurrentPiece: number
+):string {
+  // each Chinese move notation must be consisting of four Chinese characters
+  let firstCharacter, secondCharacter, thirdCharacter, fourthCharacter;
+  const movedPiece = fromSquare.piece as Piece;
+
+  // if the piece is the only piece of the same type and color in the same column
+  if(relativePositionOfCurrentPiece === 0){
+    firstCharacter = movedPiece.getChineseNameForPiece();
+    secondCharacter = movedPiece.getPieceColor() === "red" ? translateNumberToChinese(10 - fromSquare.column) : fromSquare.column;
+    thirdCharacter = getChineseCharacterForDirectionOfMovement(movedPiece, fromSquare, toSquare);
+
+    if(thirdCharacter === "進" || thirdCharacter === "退"){
+      // the logic of the fourth character is different for pieces moving in diagonal
+      switch(movedPiece.getPieceName()){
+        case "advisor":
+        case "bishop":
+        case "knight":
+          fourthCharacter = movedPiece.getPieceColor() === "red" ? translateNumberToChinese(10 - toSquare.column) : toSquare.column;
+          break;
+        default:
+          const absoluteDistanceForTheMove = Math.abs(toSquare.row - fromSquare.row);
+          fourthCharacter = movedPiece.getPieceColor() === "red" ? translateNumberToChinese(absoluteDistanceForTheMove) : absoluteDistanceForTheMove;
+          break
+      }
+      }else{
+        fourthCharacter = movedPiece.getPieceColor() === "red" ? translateNumberToChinese(10 - toSquare.column) : toSquare.column;
+    }
+  }
+  return `${firstCharacter}${secondCharacter}${thirdCharacter}${fourthCharacter}`
+}
+
+function translateNumberToChinese(number: number){
+  switch(number){
+    case 1:
+      return "一";
+    case 2:
+      return "二";    
+    case 3:
+      return "三";    
+    case 4:
+      return "四";    
+    case 5:
+      return "五";    
+    case 6:
+      return "六";    
+    case 7:
+      return "七";    
+    case 8:
+      return "八";    
+    case 9:
+      return "九";    
+    case 10:
+      return "十";
+    default:
+      return "零";
+  }
+}
+
+function getChineseCharacterForDirectionOfMovement(movedPiece:Piece, fromSquare: Square, toSquare: Square) : string{
+  if(fromSquare.row === toSquare.row) return "平"
+
+  if(movedPiece.getPieceColor() === "red"){
+    return fromSquare.row < toSquare.row ? "進" : "退" 
+  }else{
+    return fromSquare.row > toSquare.row ? "進" : "退" 
+  }  
+}

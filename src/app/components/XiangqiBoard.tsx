@@ -15,13 +15,10 @@ export default function XiangqiBoard({ gameInstance }: XiangqiBoardProps) {
 
   useEffect(() => {
     if(clickOne != null && clickTwo != null){
-      console.log("fromSqr", clickOne)
-      console.log("toSqr", clickTwo)
       gameInstance.makeMove(clickOne,clickTwo)
       setBoardSquares(gameInstance.getBoardSquares())
       setClickOne(null);
       setClickTwo(null);
-      console.log(gameInstance.getTurnOrder())
       return
     }
   }, [clickOne,clickTwo])
@@ -35,7 +32,6 @@ export default function XiangqiBoard({ gameInstance }: XiangqiBoardProps) {
         return
       }
       setClickOne(clickOneSquare)
-      console.log(clickOneSquare.id)
       return
     }else if(clickOne != null && clickTwo == null){
       const clickTwoRow = parseInt(e.currentTarget.getAttribute("data-row") as string);

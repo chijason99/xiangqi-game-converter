@@ -54,4 +54,8 @@ export class Knight extends Piece {
       }
       return false;
     }
+
+    getChineseNameForPiece(): string {
+      return "馬";
+    }
   }

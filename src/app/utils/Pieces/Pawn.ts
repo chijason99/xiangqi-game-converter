@@ -76,4 +76,8 @@ export class Pawn extends Piece {
       }
       return false;
     }
+
+    getChineseNameForPiece(): string {
+      return this.color === "red" ? "兵" : "卒";
+    }
   }
