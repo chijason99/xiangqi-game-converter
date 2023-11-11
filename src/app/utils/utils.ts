@@ -195,35 +195,76 @@ export function generateFenFromBoardSquaresArray(
 export function generateMoveNotation(
   fromSquare: Square,
   toSquare: Square,
-  relativePositionOfCurrentPiece: number
+  relativePositionOfMovedPiece: number,
+  totalNumberOfSameTypeOfPieceInColumn : number,
+  moreThanOneColumnWithTwoPawns : boolean
 ):string {
   // each Chinese move notation must be consisting of four Chinese characters
-  let firstCharacter, secondCharacter, thirdCharacter, fourthCharacter;
   const movedPiece = fromSquare.piece as Piece;
+  
+  // setting the default value of the four characters (default means that if the piece is the only piece of the same type and color in the same column)
+  let firstCharacter = movedPiece.getChineseNameForPiece();
+  let secondCharacter = movedPiece.getPieceColor() === "red" ? translateNumberToChinese(10 - fromSquare.column) : fromSquare.column;
+  let thirdCharacter = getChineseCharacterForDirectionOfMovement(movedPiece, fromSquare, toSquare);
+  let fourthCharacter:string;
 
-  // if the piece is the only piece of the same type and color in the same column
-  if(relativePositionOfCurrentPiece === 0){
-    firstCharacter = movedPiece.getChineseNameForPiece();
-    secondCharacter = movedPiece.getPieceColor() === "red" ? translateNumberToChinese(10 - fromSquare.column) : fromSquare.column;
-    thirdCharacter = getChineseCharacterForDirectionOfMovement(movedPiece, fromSquare, toSquare);
+  if(thirdCharacter === "進" || thirdCharacter === "退"){
+    // the logic of the fourth character is different for pieces moving in diagonal and pieces moving in orthogonal
+    switch(movedPiece.getPieceName()){
+      case "advisor":
+      case "bishop":
+      case "knight":
+        fourthCharacter = movedPiece.getPieceColor() === "red" ? translateNumberToChinese(10 - toSquare.column) : toSquare.column.toString();
+        break;
+      default:
+        const absoluteDistanceForTheMove = Math.abs(toSquare.row - fromSquare.row);
+        fourthCharacter = movedPiece.getPieceColor() === "red" ? translateNumberToChinese(absoluteDistanceForTheMove) : absoluteDistanceForTheMove.toString();
+        break
+    }
+    }else{
+      fourthCharacter = movedPiece.getPieceColor() === "red" ? translateNumberToChinese(10 - toSquare.column) : toSquare.column.toString();
+  }
 
-    if(thirdCharacter === "進" || thirdCharacter === "退"){
-      // the logic of the fourth character is different for pieces moving in diagonal
-      switch(movedPiece.getPieceName()){
-        case "advisor":
-        case "bishop":
-        case "knight":
-          fourthCharacter = movedPiece.getPieceColor() === "red" ? translateNumberToChinese(10 - toSquare.column) : toSquare.column;
-          break;
-        default:
-          const absoluteDistanceForTheMove = Math.abs(toSquare.row - fromSquare.row);
-          fourthCharacter = movedPiece.getPieceColor() === "red" ? translateNumberToChinese(absoluteDistanceForTheMove) : absoluteDistanceForTheMove;
-          break
-      }
-      }else{
-        fourthCharacter = movedPiece.getPieceColor() === "red" ? translateNumberToChinese(10 - toSquare.column) : toSquare.column;
+  // edge cases: more than one piece of same type and color in the column of the moved piece
+
+  // if there is another piece of the same color and type in the same column
+  // if the piece is a pawn, only do this manipulation if there is no other column with more than one pawn
+  if(totalNumberOfSameTypeOfPieceInColumn === 2 && (movedPiece.getPieceName() !== "pawn" || !moreThanOneColumnWithTwoPawns)){
+    secondCharacter = firstCharacter;
+    firstCharacter = relativePositionOfMovedPiece === 0 ? "後" : "前";
+  }
+
+  // edge cases for pawns
+  if(totalNumberOfSameTypeOfPieceInColumn >= 2 && movedPiece.getPieceName() === "pawn" && moreThanOneColumnWithTwoPawns){
+    // if there is more than one column with two pawns, then the second character would be the original column number, else it would be the "兵"/"卒" character
+    if(moreThanOneColumnWithTwoPawns){
+      secondCharacter = movedPiece.getPieceColor() === "red" ? translateNumberToChinese(10 - fromSquare.column) : fromSquare.column.toString();
+    }else{
+      secondCharacter = firstCharacter
+    }
+
+    switch(relativePositionOfMovedPiece){
+      case 1:
+        // if there is three pawns on the column, and its position is one, then it is the middle pawn
+        // else if there is only two pawns on the column, then it would be the front pawn
+        // else its position would be total number of pawns - 1
+        firstCharacter = totalNumberOfSameTypeOfPieceInColumn === 3 ? "中" : totalNumberOfSameTypeOfPieceInColumn === 2 ? "前" : translateNumberToChinese(totalNumberOfSameTypeOfPieceInColumn - 1);
+        break;
+      case 2:
+        firstCharacter = totalNumberOfSameTypeOfPieceInColumn === 3 ? "前" : translateNumberToChinese(totalNumberOfSameTypeOfPieceInColumn - 2);
+        break;
+      case 3:
+        firstCharacter = totalNumberOfSameTypeOfPieceInColumn === 4 ? "前" : translateNumberToChinese(totalNumberOfSameTypeOfPieceInColumn - 3);
+        break;
+      case 4:
+        firstCharacter = "前";
+        break;        
+      default:
+        firstCharacter = "後";
+        break;
     }
   }
+
   return `${firstCharacter}${secondCharacter}${thirdCharacter}${fourthCharacter}`
 }
 

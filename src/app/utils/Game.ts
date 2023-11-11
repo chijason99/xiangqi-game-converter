@@ -59,7 +59,7 @@ export class Game {
       return;
     }
     // for generating the move notation
-    const relativePositionOfMovedPiece = this.board.getRelativePositionOfMovedPiece(this.board.squares,fromSquare);
+    const { totalNumberOfSameTypeOfPieceInColumn , relativePositionOfMovedPiece, moreThanOneColumnWithTwoPawns} = this.board.getRelativePositionOfMovedPiece(this.board.squares,fromSquare);
     const newBoardPosition = this.board.movePiece(this.board.squares,fromSquare, toSquare);
     this.board.savePositionFromBoardSquares(newBoardPosition)
     this.nextTurn();
@@ -67,7 +67,7 @@ export class Game {
       this.board.squares,
       this.turnOrder
     );
-    this.saveMove(fromSquare, toSquare, relativePositionOfMovedPiece);
+    this.saveMove(fromSquare, toSquare, relativePositionOfMovedPiece, totalNumberOfSameTypeOfPieceInColumn, moreThanOneColumnWithTwoPawns);
     console.log(this.moves)
     return
   }
@@ -78,7 +78,7 @@ export class Game {
       : (this.turnOrder = "red");
   }
 
-  saveMove(fromSquare: Square, toSquare: Square, relativePositionOfMovedPiece : number) {
+  saveMove(fromSquare: Square, toSquare: Square, relativePositionOfMovedPiece : number, totalNumberOfSameTypeOfPieceInColumn : number, moreThanOneColumnWithTwoPawns:boolean) {
     
     const moveObject: Move = {
       turnOrder: this.turnOrder,
@@ -86,7 +86,7 @@ export class Game {
       fromSquare,
       toSquare,
       movedPiece: toSquare.piece as Piece,
-      moveNotation: generateMoveNotation(fromSquare, toSquare, relativePositionOfMovedPiece)
+      moveNotation: generateMoveNotation(fromSquare, toSquare, relativePositionOfMovedPiece, totalNumberOfSameTypeOfPieceInColumn, moreThanOneColumnWithTwoPawns)
     };
     this.moves.push(moveObject);
   }

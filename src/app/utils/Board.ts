@@ -7,9 +7,11 @@ import {
   parseFen,
 } from "./utils";
 
+const TEST_FEN = "rnbak1bnr/2P1a4/1cP4c1/2P6/2P6/2P3p2/6p2/1C4pC1/6p2/RNBAKApNR w - - 0 0"
+
 export class Board {
   constructor({
-    initialFen = INITIAL_FEN,
+    initialFen = TEST_FEN,
     width,
   }: {
     initialFen?: string;
@@ -257,7 +259,11 @@ export class Board {
 
   // a method for generating notation, check if another piece(s) of the same type and color is/are on the same column as a given piece 
   // TODO: a special method for pawns as it would need more details
-  getRelativePositionOfMovedPiece(boardSquare:Square[][], fromSquare:Square) : number
+  getRelativePositionOfMovedPiece(boardSquare:Square[][], fromSquare:Square) : {
+    totalNumberOfSameTypeOfPieceInColumn : number
+    relativePositionOfMovedPiece : number
+    moreThanOneColumnWithTwoPawns : boolean
+  }
   {
     // relative position starts from 0, and it is view from the perspective of the player making the move
     // for example, if the returned relativePositionOfCurrentPiece is 1, it indicates that the piece in the input is the piece at front
@@ -265,7 +271,7 @@ export class Board {
 
     const squaresOfAnotherPieceOnTheSameColumn : Square[] = [];
     const movedPiece = fromSquare.piece as Piece;
-    let isAnyPieceOfSameTypeOnTheSameColumn = false;
+    let moreThanOneColumnWithTwoPawns = false;
     let relativePositionOfMovedPiece = 0;
 
     boardSquare.forEach(row => {
@@ -280,8 +286,6 @@ export class Board {
     })
 
     if(squaresOfAnotherPieceOnTheSameColumn.length === 1){
-      isAnyPieceOfSameTypeOnTheSameColumn = true;
-
       if(movedPiece.getPieceColor() === "red"){
           relativePositionOfMovedPiece = squaresOfAnotherPieceOnTheSameColumn[0].row > fromSquare.row ? 0 : 1;
       }else{
@@ -289,10 +293,31 @@ export class Board {
       }
     }
 
-    // case for pawns
-    if(squaresOfAnotherPieceOnTheSameColumn.length > 1){
-      isAnyPieceOfSameTypeOnTheSameColumn = true;
+    // case for pawns 
+    // only need to perform the check if the current column have 1 - 3 pawns
+    if(movedPiece.getPieceName() === "pawn" && squaresOfAnotherPieceOnTheSameColumn.length < 4){
+      const result : {[key: string]: number;} = {}
+      let numberOfColumnsWithMoreThanOnePawn = 0;
 
+      // find all pawns of the same color, add their count in each column to result
+      boardSquare.forEach(row => {
+        row.forEach(square => {
+          if(square.piece?.getPieceName() === "pawn" &&
+            square.piece?.getPieceColor() === movedPiece.getPieceColor()
+          ){
+            result[square.column.toString()] = result[square.column.toString()] == null ? 1 : result[square.column.toString()]+=1
+          }
+        })
+      })
+
+      for(const column in result){
+        numberOfColumnsWithMoreThanOnePawn = result[column] >= 2 ? numberOfColumnsWithMoreThanOnePawn+=1 : numberOfColumnsWithMoreThanOnePawn;
+      }
+      console.log(result, numberOfColumnsWithMoreThanOnePawn, moreThanOneColumnWithTwoPawns)
+      moreThanOneColumnWithTwoPawns = numberOfColumnsWithMoreThanOnePawn > 1;
+    }
+
+    if(squaresOfAnotherPieceOnTheSameColumn.length > 1){
       squaresOfAnotherPieceOnTheSameColumn.forEach(square => {
         if(movedPiece.getPieceColor() === "red"){
           relativePositionOfMovedPiece = fromSquare.row > square.row ? relativePositionOfMovedPiece+=1 : relativePositionOfMovedPiece;
@@ -302,6 +327,10 @@ export class Board {
       })
     }
 
-     return relativePositionOfMovedPiece
+     return {
+      totalNumberOfSameTypeOfPieceInColumn : squaresOfAnotherPieceOnTheSameColumn.length + 1,
+      relativePositionOfMovedPiece,
+      moreThanOneColumnWithTwoPawns
+    }
   }
 }
