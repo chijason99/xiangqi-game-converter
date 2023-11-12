@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import BoardSquare from "../components/BoardSquare";
 import { GameLogicApi } from "../utils/GameLogicApi";
 import { Square } from "../utils/Square";
+import { Observer } from "../utils/Game";
 
 type XiangqiBoardProps = { gameInstance:GameLogicApi};
 
@@ -14,14 +15,27 @@ export default function XiangqiBoard({ gameInstance }: XiangqiBoardProps) {
   const [clickTwo, setClickTwo] = useState<Square | null>(null)
 
   useEffect(() => {
+    const observer: Observer = {
+      update() {
+        setBoardSquares(gameInstance.getBoardSquares())
+      },
+    }
+
+    gameInstance.addObserver(observer)
+
+    return () => {
+      gameInstance.removeObserver(observer)
+    }
+  }, [])
+
+  useEffect(() => {
     if(clickOne != null && clickTwo != null){
       gameInstance.makeMove(clickOne,clickTwo)
-      setBoardSquares(gameInstance.getBoardSquares())
       setClickOne(null);
       setClickTwo(null);
       return
     }
-  }, [clickOne,clickTwo])
+  }, [clickOne, clickTwo])
 
   function handleClickBoardSquare(e:React.MouseEvent){
     if(clickOne == null){
@@ -49,7 +63,6 @@ export default function XiangqiBoard({ gameInstance }: XiangqiBoardProps) {
       setClickTwo(clickTwoSquare)
       return
     }
-
   }
   return (
     <div

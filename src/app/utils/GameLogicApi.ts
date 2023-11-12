@@ -1,4 +1,4 @@
-import { Game } from "./Game";
+import { Game, Observer } from "./Game";
 import { Square } from "./Square";
 
 export class GameLogicApi {
@@ -11,6 +11,7 @@ export class GameLogicApi {
 
   makeMove(fromSquare: Square, toSquare: Square): void {
     this.gameInstance.makeMove(fromSquare,toSquare)
+    this.notifyObservers()
     return
   }
   init() {
@@ -20,7 +21,7 @@ export class GameLogicApi {
     return this.gameInstance.moves[this.gameInstance.moves.length - 1]
   }
   getMoves() {
-    return this.gameInstance.moves
+    return [...this.gameInstance.moves]
   }
   getWidth() {
     return this.width;
@@ -60,5 +61,15 @@ export class GameLogicApi {
     );
   }
 
+  addObserver(observer : Observer){
+    this.gameInstance.observers.push(observer)
+  }
 
+  removeObserver(observer: Observer){
+    this.gameInstance.observers.filter(obs => obs !== observer)
+  }
+
+  notifyObservers(){
+    this.gameInstance.observers.forEach(observer => observer.update())
+  }
 }

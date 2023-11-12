@@ -1,9 +1,27 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { GameLogicApi } from '../utils/GameLogicApi'
+import { Move, Observer } from '../utils/Game'
 type MoveListProps = {
     gameInstance: GameLogicApi
 }
 export default function MoveList({gameInstance}:MoveListProps) {
+  const [moveList, setMoveList] = useState<Move[]>([])
+
+  useEffect(() => {
+    const observer: Observer = {
+      update(){
+        setMoveList(gameInstance.getMoves())
+      }
+    }
+
+    gameInstance.addObserver(observer)
+  
+    return () => {
+      gameInstance.removeObserver(observer)
+    }
+  }, [])
+  
+
   return (
     <div>
         Move List table
@@ -17,9 +35,9 @@ export default function MoveList({gameInstance}:MoveListProps) {
           </thead>
           <tbody>
               {
-                gameInstance.getMoves().map((move) => {
+                moveList.map((move,index) => {
                   return (
-                  <tr>
+                  <tr key={index}>
                     <td>
                       {move.fen}
                     </td>

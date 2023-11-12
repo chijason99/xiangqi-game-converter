@@ -13,6 +13,10 @@ export type Move = {
   moveNotation: string
 };
 
+export type Observer = {
+  update: () => void
+}
+
 // this class is responsible for managing the state of the game
 export class Game {
   constructor({
@@ -36,6 +40,7 @@ export class Game {
     this.isGameEnd = false;
     this.moves = [];
     this.board = board;
+    this.observers = []
   }
   turnOrder: "red" | "black";
   round: number;
@@ -45,6 +50,7 @@ export class Game {
   isGameEnd: boolean;
   moves: Move[];
   board: Board;
+  observers: Observer[]
 
   startGame() {
     const { turnOrder } = this.board.setUpBoardPosition(this.board.currentFen);
