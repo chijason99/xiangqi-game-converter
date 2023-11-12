@@ -35,6 +35,7 @@ export class Game {
     board: Board;
   }) {
     this.turnOrder = turnOrder;
+    this.initialTurnOrder = turnOrder
     this.round = round;
     this.redPlayer = redPlayer;
     this.blackPlayer = blackPlayer;
@@ -45,6 +46,7 @@ export class Game {
     this.observers = []
   }
   turnOrder: "red" | "black";
+  initialTurnOrder: "red" | "black";
   round: number;
   redPlayer: RedPlayer;
   blackPlayer: BlackPlayer;
@@ -110,7 +112,28 @@ export class Game {
     };
     this.moves.push(moveObject);
   }
-  deleteMove() {}
+
+  deleteMove(index:number) {
+    const allMoves = [...this.moves]
+    if(index > allMoves.length - 1) return;
+
+    const moveObjectBeforeDeletedMove = index > 1 ? allMoves[index - 1] : null;
+
+    if(moveObjectBeforeDeletedMove == null){
+      this.moves = []
+      this.round = 0
+      this.turnOrder = this.initialTurnOrder
+      this.board.setUpBoardPosition(this.board.initialFen)
+      return
+    }
+
+    this.moves = allMoves.slice(0, index)
+    this.round = moveObjectBeforeDeletedMove.round
+    this.board.setUpBoardPosition(moveObjectBeforeDeletedMove.fen)
+    this.turnOrder = moveObjectBeforeDeletedMove.turnOrder
+
+  }
+
   isGameOver() {}
 
   isMoveValid(fromSquare: Square, toSquare: Square): boolean {

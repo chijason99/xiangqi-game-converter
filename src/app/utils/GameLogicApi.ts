@@ -83,6 +83,12 @@ export class GameLogicApi {
     this.notifyObserver("board")
   }
 
+  deleteMoves(index:number){
+    this.gameInstance.deleteMove(index)
+
+    this.notifyAllObservers()
+  }
+
   addObserver(observer : Observer){
     this.gameInstance.observers.push(observer)
   }

@@ -19,11 +19,13 @@ export class Board {
   }) {
     this.squares = [];
     this.currentFen = initialFen;
+    this.initialFen = initialFen;
     this.width = width;
   }
   squares: Square[][];
   currentFen: string;
   width: number;
+  initialFen: string
 
   isLegalMove(
     fromSquare: Square,

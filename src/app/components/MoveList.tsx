@@ -61,6 +61,10 @@ export default function MoveList({gameInstance}:MoveListProps) {
     if(currentSelectedMoveIndex === gameInstance.getMoves().length - 1) return;
     setCurrentSelectedMoveIndex(prevIndex => prevIndex + 1)
   }
+
+  function handleDeleteCurrentAndFutureMoves(){
+    gameInstance.deleteMoves(currentSelectedMoveIndex)
+  }
   return (
     <section style={{width: `200px`, height: `400px`}}>
     <div style={{height : `${gameInstance.getWidth()*10/9}px`, width: `min-content` }} className='overflow-y-auto' >
@@ -90,6 +94,7 @@ export default function MoveList({gameInstance}:MoveListProps) {
     </div>
     <div className='flex items-center justify-between mt-2'>
           <button onClick={handleNavigateThroughPreviousMovesByPrevButton} disabled = {!prevButtonEnabled}>Prev</button>
+          <button onClick={handleDeleteCurrentAndFutureMoves} disabled={moveList.length === 0}>Delete</button>
           <button onClick={handleNavigateThroughPreviousMovesByNextButton} disabled = {!nextButtonEnabled}>Next</button>
     </div>
     </section>
