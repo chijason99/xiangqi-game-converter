@@ -18,7 +18,7 @@ gameInstance.init();
 
 export default function () {
   return (
-    <section className="flex justify-between">
+    <section className="flex justify-between items-center">
       <div id="board-container">
         <XiangqiBoard gameInstance={gameInstance} />
       </div>

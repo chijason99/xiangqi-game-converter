@@ -23,14 +23,13 @@ export default function MoveList({gameInstance}:MoveListProps) {
   
 
   return (
-    <div>
-        Move List table
-        <table className='w-full'>
+    <div style={{height : `${gameInstance.getWidth()*10/9}px`, width: `min-content` }} className='overflow-y-auto' >
+        <h2 className='text-center'>Move List table</h2>
+        <table className='table-fixed' style={{width: `200px`}}>
           <thead>
             <tr>
               <th>Round</th>
-              <th>Red</th>
-              <th>Black</th>
+              <th>Moves</th>
             </tr>
           </thead>
           <tbody>
@@ -38,14 +37,11 @@ export default function MoveList({gameInstance}:MoveListProps) {
                 moveList.map((move,index) => {
                   return (
                   <tr key={index}>
-                    <td>
-                      {move.fen}
+                    <td className='text-center'>
+                      {move.movedPiece.getPieceColor() === "red" ? move.round : ""}
                     </td>
-                    <td>
-                      test
-                    </td>
-                    <td>
-                      test
+                    <td className='text-center'>
+                      {move.moveNotation}
                     </td>
                   </tr>)
                 })

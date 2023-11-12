@@ -204,7 +204,7 @@ export function generateMoveNotation(
   
   // setting the default value of the four characters (default means that if the piece is the only piece of the same type and color in the same column)
   let firstCharacter = movedPiece.getChineseNameForPiece();
-  let secondCharacter = movedPiece.getPieceColor() === "red" ? translateNumberToChinese(10 - fromSquare.column) : fromSquare.column;
+  let secondCharacter = movedPiece.getPieceColor() === "red" ? translateNumberToChinese(10 - fromSquare.column) : convertHalfWidthNumberToFullWidth(fromSquare.column);
   let thirdCharacter = getChineseCharacterForDirectionOfMovement(movedPiece, fromSquare, toSquare);
   let fourthCharacter:string;
 
@@ -214,15 +214,15 @@ export function generateMoveNotation(
       case "advisor":
       case "bishop":
       case "knight":
-        fourthCharacter = movedPiece.getPieceColor() === "red" ? translateNumberToChinese(10 - toSquare.column) : toSquare.column.toString();
+        fourthCharacter = movedPiece.getPieceColor() === "red" ? translateNumberToChinese(10 - toSquare.column) : convertHalfWidthNumberToFullWidth(toSquare.column);
         break;
       default:
         const absoluteDistanceForTheMove = Math.abs(toSquare.row - fromSquare.row);
-        fourthCharacter = movedPiece.getPieceColor() === "red" ? translateNumberToChinese(absoluteDistanceForTheMove) : absoluteDistanceForTheMove.toString();
+        fourthCharacter = movedPiece.getPieceColor() === "red" ? translateNumberToChinese(absoluteDistanceForTheMove) : convertHalfWidthNumberToFullWidth(absoluteDistanceForTheMove);
         break
     }
     }else{
-      fourthCharacter = movedPiece.getPieceColor() === "red" ? translateNumberToChinese(10 - toSquare.column) : toSquare.column.toString();
+      fourthCharacter = movedPiece.getPieceColor() === "red" ? translateNumberToChinese(10 - toSquare.column) : convertHalfWidthNumberToFullWidth(toSquare.column);
   }
 
   // edge cases: more than one piece of same type and color in the column of the moved piece
@@ -235,10 +235,10 @@ export function generateMoveNotation(
   }
 
   // edge cases for pawns
-  if(totalNumberOfSameTypeOfPieceInColumn >= 2 && movedPiece.getPieceName() === "pawn" && moreThanOneColumnWithTwoPawns){
+  if(totalNumberOfSameTypeOfPieceInColumn >= 2 && (movedPiece.getPieceName() === "pawn" || moreThanOneColumnWithTwoPawns)){
     // if there is more than one column with two pawns, then the second character would be the original column number, else it would be the "兵"/"卒" character
     if(moreThanOneColumnWithTwoPawns){
-      secondCharacter = movedPiece.getPieceColor() === "red" ? translateNumberToChinese(10 - fromSquare.column) : fromSquare.column.toString();
+      secondCharacter = movedPiece.getPieceColor() === "red" ? translateNumberToChinese(10 - fromSquare.column) : convertHalfWidthNumberToFullWidth(fromSquare.column);
     }else{
       secondCharacter = firstCharacter
     }
@@ -268,6 +268,31 @@ export function generateMoveNotation(
   return `${firstCharacter}${secondCharacter}${thirdCharacter}${fourthCharacter}`
 }
 
+function convertHalfWidthNumberToFullWidth(number:number):string{
+  switch(number){
+    case 1:
+      return "１";
+    case 2:
+      return "２";    
+    case 3:
+      return "３";    
+    case 4:
+      return "４";    
+    case 5:
+      return "５";    
+    case 6:
+      return "６";    
+    case 7:
+      return "７";    
+    case 8:
+      return "８";    
+    case 9:
+      return "９";    
+    default:
+      return "０";
+  }
+}
+
 function translateNumberToChinese(number: number){
   switch(number){
     case 1:
@@ -288,8 +313,6 @@ function translateNumberToChinese(number: number){
       return "八";    
     case 9:
       return "九";    
-    case 10:
-      return "十";
     default:
       return "零";
   }

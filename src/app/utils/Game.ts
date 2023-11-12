@@ -10,7 +10,8 @@ export type Move = {
   movedPiece: Piece;
   fromSquare: Square;
   toSquare: Square;
-  moveNotation: string
+  moveNotation: string;
+  round : number;
 };
 
 export type Observer = {
@@ -21,7 +22,7 @@ export type Observer = {
 export class Game {
   constructor({
     turnOrder,
-    round = 1,
+    round = 0,
     redPlayer = new RedPlayer("unknown"),
     blackPlayer = new BlackPlayer("unknown"),
     board,
@@ -67,15 +68,26 @@ export class Game {
     // for generating the move notation
     const { totalNumberOfSameTypeOfPieceInColumn , relativePositionOfMovedPiece, moreThanOneColumnWithTwoPawns} = this.board.getRelativePositionOfMovedPiece(this.board.squares,fromSquare);
     const newBoardPosition = this.board.movePiece(this.board.squares,fromSquare, toSquare);
+
     this.board.savePositionFromBoardSquares(newBoardPosition)
+
     this.nextTurn();
+
     this.board.generateFenFromPosition(
       this.board.squares,
       this.turnOrder
     );
-    this.saveMove(fromSquare, toSquare, relativePositionOfMovedPiece, totalNumberOfSameTypeOfPieceInColumn, moreThanOneColumnWithTwoPawns);
+    
+    this.updateCurrentRound()
+
+    this.saveMove(fromSquare, toSquare, relativePositionOfMovedPiece, totalNumberOfSameTypeOfPieceInColumn, moreThanOneColumnWithTwoPawns, this.round);
+
     console.log(this.moves)
     return
+  }
+
+  updateCurrentRound() : void{
+    this.round = this.moves.length % 2 === 0 ? this.round +=1 : this.round; 
   }
 
   nextTurn(): void {
@@ -84,15 +96,16 @@ export class Game {
       : (this.turnOrder = "red");
   }
 
-  saveMove(fromSquare: Square, toSquare: Square, relativePositionOfMovedPiece : number, totalNumberOfSameTypeOfPieceInColumn : number, moreThanOneColumnWithTwoPawns:boolean) {
+  saveMove(fromSquare: Square, toSquare: Square, relativePositionOfMovedPiece : number, totalNumberOfSameTypeOfPieceInColumn : number, moreThanOneColumnWithTwoPawns:boolean, round:number) {
     
     const moveObject: Move = {
       turnOrder: this.turnOrder,
       fen: this.board.currentFen,
       fromSquare,
       toSquare,
-      movedPiece: toSquare.piece as Piece,
-      moveNotation: generateMoveNotation(fromSquare, toSquare, relativePositionOfMovedPiece, totalNumberOfSameTypeOfPieceInColumn, moreThanOneColumnWithTwoPawns)
+      movedPiece: fromSquare.piece as Piece,
+      moveNotation: generateMoveNotation(fromSquare, toSquare, relativePositionOfMovedPiece, totalNumberOfSameTypeOfPieceInColumn, moreThanOneColumnWithTwoPawns),
+      round
     };
     this.moves.push(moveObject);
   }

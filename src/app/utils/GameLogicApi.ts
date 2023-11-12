@@ -14,15 +14,19 @@ export class GameLogicApi {
     this.notifyObservers()
     return
   }
+
   init() {
     return this.gameInstance.startGame();
   }
+
   getLastMove(){
     return this.gameInstance.moves[this.gameInstance.moves.length - 1]
   }
+
   getMoves() {
     return [...this.gameInstance.moves]
   }
+
   getWidth() {
     return this.width;
   }
@@ -33,15 +37,21 @@ export class GameLogicApi {
   getBlackPlayer() {
     return this.gameInstance.blackPlayer;
   }
+
   getTurnOrder() {
     return this.gameInstance.turnOrder;
   }
+
   getSquaresByCoordinates(row: number, column: number) {
     return this.gameInstance.board.getSquareByCoordinates(this.getBoardSquares(),row, column);
   }
 
   getBoardSquares() {
     return [...this.gameInstance.board.squares];
+  }
+
+  getCurrentRound(){
+    return this.gameInstance.round
   }
 
   getCurrentFen() {
