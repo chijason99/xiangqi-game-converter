@@ -11,7 +11,7 @@ export class GameLogicApi {
 
   makeMove(fromSquare: Square, toSquare: Square): void {
     this.gameInstance.makeMove(fromSquare,toSquare)
-    this.notifyObservers()
+    this.notifyAllObservers()
     return
   }
 
@@ -71,6 +71,18 @@ export class GameLogicApi {
     );
   }
 
+  navigateThroughPreviousMoves(index:number){
+    const allMoves = this.getMoves();
+    
+    if(allMoves.length === 0) return
+
+    const {fen} = allMoves[index];
+
+    this.gameInstance.board.setUpBoardPosition(fen)
+
+    this.notifyObserver("board")
+  }
+
   addObserver(observer : Observer){
     this.gameInstance.observers.push(observer)
   }
@@ -79,7 +91,15 @@ export class GameLogicApi {
     this.gameInstance.observers.filter(obs => obs !== observer)
   }
 
-  notifyObservers(){
+  notifyAllObservers(){
     this.gameInstance.observers.forEach(observer => observer.update())
+  }
+
+  notifyObserver(type:string){
+    this.gameInstance.observers.forEach(observer => {
+      if(type != null && observer.type === type){
+        observer.update()
+      }
+    })
   }
 }

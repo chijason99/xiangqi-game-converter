@@ -16,6 +16,7 @@ export default function XiangqiBoard({ gameInstance }: XiangqiBoardProps) {
 
   useEffect(() => {
     const observer: Observer = {
+      type: "board",
       update() {
         setBoardSquares(gameInstance.getBoardSquares())
       },

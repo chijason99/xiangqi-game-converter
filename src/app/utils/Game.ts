@@ -15,6 +15,7 @@ export type Move = {
 };
 
 export type Observer = {
+  type: "board" | "moveList"
   update: () => void
 }
 

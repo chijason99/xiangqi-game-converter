@@ -154,7 +154,7 @@ export class Board {
     );
     return result;
   }
-   numberOfPiecesBetweenTwoCoordinatesOnTheSameRow(
+  numberOfPiecesBetweenTwoCoordinatesOnTheSameRow(
     boardSquares: Square[][],
     fromSquare: Square,
     toSquare: Square,
