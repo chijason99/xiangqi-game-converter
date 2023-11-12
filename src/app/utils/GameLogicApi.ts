@@ -1,4 +1,4 @@
-import { Game } from "./Game";
+import { Game, Observer } from "./Game";
 import { Square } from "./Square";
 
 export class GameLogicApi {
@@ -11,17 +11,22 @@ export class GameLogicApi {
 
   makeMove(fromSquare: Square, toSquare: Square): void {
     this.gameInstance.makeMove(fromSquare,toSquare)
+    this.notifyObservers()
     return
   }
+
   init() {
     return this.gameInstance.startGame();
   }
+
   getLastMove(){
     return this.gameInstance.moves[this.gameInstance.moves.length - 1]
   }
+
   getMoves() {
-    return this.gameInstance.moves
+    return [...this.gameInstance.moves]
   }
+
   getWidth() {
     return this.width;
   }
@@ -32,15 +37,21 @@ export class GameLogicApi {
   getBlackPlayer() {
     return this.gameInstance.blackPlayer;
   }
+
   getTurnOrder() {
     return this.gameInstance.turnOrder;
   }
+
   getSquaresByCoordinates(row: number, column: number) {
     return this.gameInstance.board.getSquareByCoordinates(this.getBoardSquares(),row, column);
   }
 
   getBoardSquares() {
     return [...this.gameInstance.board.squares];
+  }
+
+  getCurrentRound(){
+    return this.gameInstance.round
   }
 
   getCurrentFen() {
@@ -60,5 +71,15 @@ export class GameLogicApi {
     );
   }
 
+  addObserver(observer : Observer){
+    this.gameInstance.observers.push(observer)
+  }
 
+  removeObserver(observer: Observer){
+    this.gameInstance.observers.filter(obs => obs !== observer)
+  }
+
+  notifyObservers(){
+    this.gameInstance.observers.forEach(observer => observer.update())
+  }
 }

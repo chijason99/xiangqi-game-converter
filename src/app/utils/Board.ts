@@ -11,7 +11,7 @@ const TEST_FEN = "rnbak1bnr/2P1a4/1cP4c1/2P6/2P6/2P3p2/6p2/1C4pC1/6p2/RNBAKApNR 
 
 export class Board {
   constructor({
-    initialFen = TEST_FEN,
+    initialFen = INITIAL_FEN,
     width,
   }: {
     initialFen?: string;
